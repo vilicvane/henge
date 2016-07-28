@@ -1,0 +1,24 @@
+{
+  "name": "henge",
+  "description": "Ruff Build Utilities",
+  "author": "Nanchao Inc.",
+  "version": "0.0.0",
+  "main": "bld/index.js",
+  "bin": {
+    "henge": "bld/cli.js"
+  },
+  "dependencies": {
+    "archiver": "^1.0.1",
+    "chalk": "^1.1.3",
+    "clime": "^0.3.2",
+    "fs-extra": "^0.30.0",
+    "node-fetch": "^1.5.3",
+    "resolve": "^1.1.7",
+    "source-map-support": "^0.4.2",
+    "thenfail": "^0.4.10",
+    "which": "^1.2.10"
+  },
+  "devDependencies": {
+    "typescript": "^2.0.0"
+  }
+}
