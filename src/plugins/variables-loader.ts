@@ -23,7 +23,7 @@ export class Commit {
     }
 }
 
-export default class extends Plugin {
+export default class implements Plugin {
     loadVariables(project: Project): Dictionary<any> {
         let git = new DotGit(project.dir);
         let commit = new Commit(git.head);

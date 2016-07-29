@@ -12,7 +12,7 @@ export interface PluginConstructor {
 
 export type NullableDependencyResult = DependencyResult | undefined;
 
-export abstract class Plugin {
+export interface Plugin {
     loadVariables?(project: Project): Dictionary<any> | Promise<Dictionary<any>>;
     resolveDependency?(dependency: DependencyConfiguration, context: DependencyContext): NullableDependencyResult | Promise<NullableDependencyResult>;
     processArtifactMetadata?(metadata: ArtifactMetadata, project: Project): void | Promise<void>;

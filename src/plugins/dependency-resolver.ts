@@ -9,7 +9,7 @@ import {
     Plugin
 } from '../core';
 
-export default class extends Plugin {
+export default class implements Plugin {
     private metadataCache = new Map<string, ArtifactMetadata>();
 
     async resolveDependency(config: any, context: DependencyContext): Promise<NullableDependencyResult> {
