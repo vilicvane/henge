@@ -149,7 +149,7 @@ export class Artifact {
             artifacts.push({
                 id,
                 platform: project.platformSpecified ? platform.name : undefined,
-                path: Path.relative(project.dir, path)
+                path: Path.relative(project.dir, path).replace(/\\/g, '/')
             });
         }
 

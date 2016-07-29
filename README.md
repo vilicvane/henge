@@ -1,7 +1,9 @@
 # Henge Distribution Workshop
 
+<img alt="Henge" src="./res/logo.png" width="240" height="240" />
+
 ## Install
 
 ```sh
-npm install git+ssh://git@git.nanchao.org:Ruff/henge.git --save-dev
+npm install henge --save-dev
 ```

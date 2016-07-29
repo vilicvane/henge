@@ -1,8 +1,7 @@
 {
   "name": "henge",
-  "description": "Ruff Build Utilities",
-  "author": "Nanchao Inc.",
-  "version": "0.0.0",
+  "description": "Henge Distribution Workshop",
+  "version": "0.1.0",
   "main": "bld/index.js",
   "bin": {
     "henge": "bld/cli.js"
