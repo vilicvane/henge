@@ -5,21 +5,17 @@ import * as Archiver from 'archiver';
 import { ExpectedError } from 'clime';
 import P, { invoke } from 'thenfail';
 
+import {
+    ArtifactConfiguration,
+    ArtifactMetadata,
+    ArtifactMetadataItem,
+    FileMappingConfiguration,
+    PlatformInfo,
+    Project
+} from './';
+
 import { FileWalker, Capture } from '../utils/file-walker';
 import * as Style from '../utils/style';
-
-export interface FileMappingDescriptor {
-    pattern: string;
-    baseDir?: string;
-    package?: string;
-    path?: string;
-    platform?: string;
-    platforms?: string[];
-}
-
-export type FileMappingConfiguration = string | FileMappingDescriptor;
-
-export type PackageFormat = 'zip' | 'tar';
 
 export interface FileMapping {
     package: string | undefined;
@@ -34,47 +30,12 @@ interface FileInfo {
     captures: Capture[];
 }
 
-export interface ArtifactMetadataItem {
-    id: string;
-    name: string;
-    platform?: string;
-    path: string;
-}
-
-export interface ArtifactMetadata {
-    name: string;
-    version: string;
-    commit: string;
-    artifacts: ArtifactMetadataItem[];
-}
-
-export interface ArtifactConfiguration {
-    name?: string;
-    root?: string;
-    files: FileMappingConfiguration[];
-}
-
-export interface ArtifactOptions {
-    projectName: string;
-    distDir: string;
-    platformSpecified: boolean;
-    platforms: string[];
-    dependencyDirMap: Map<string, string>;
-}
-
 export class Artifact {
-    readonly name: string;
-
-    private distDir: string;
-    private platformSpecified: boolean;
-    private platforms: string[];
-    private dependencyDirMap: Map<string, string>;
-
     private mappings: FileMapping[];
 
     constructor(
         private config: ArtifactConfiguration,
-        options: ArtifactOptions
+        private project: Project
     ) {
         if (!config) {
             throw new ExpectedError('Missing `artifact` configuration');
@@ -83,16 +44,6 @@ export class Artifact {
         if (!config.files) {
             throw new ExpectedError('Missing `files` field in `artifact` configuration');
         }
-
-        this.name = config.name || options.projectName;
-
-        this.distDir = options.distDir;
-
-        this.platformSpecified = options.platformSpecified;
-        this.platforms = options.platforms;
-        this.dependencyDirMap = options.dependencyDirMap;
-
-        let cwd = process.cwd();
 
         this.mappings = config.files.map(config => Artifact.normalizeMapping(config));
     }
@@ -120,12 +71,13 @@ export class Artifact {
         let baseDir: string;
 
         let packageName = mapping.package;
+        let project = this.project;
 
         if (packageName) {
             baseDir =
-                this.platformSpecified && this.dependencyDirMap.get(`${packageName}\t${platform}`) ||
-                this.dependencyDirMap.get(packageName) ||
-                process.cwd();
+                project.platformSpecified && project.dependencyDirMap.get(`${packageName}\t${platform}`) ||
+                project.dependencyDirMap.get(packageName) ||
+                project.dir;
 
             if (mapping.baseDir) {
                 baseDir = Path.resolve(baseDir, mapping.baseDir);
@@ -133,47 +85,57 @@ export class Artifact {
         } else if (mapping.baseDir){
             baseDir = Path.resolve(mapping.baseDir);
         } else {
-            baseDir = process.cwd();
+            baseDir = project.dir;
         }
 
         return baseDir;
     }
 
     async generate(): Promise<void> {
-        let name = this.name;
+        let project = this.project;
+
+        let { name, version } = project;
 
         let artifacts: ArtifactMetadataItem[] = [];
 
         let metadata: ArtifactMetadata = {
             name,
-            version: '',
-            commit: '',
+            version,
             artifacts
         };
 
-        for (let platform of this.platforms) {
+        for (let plugin of project.plugins) {
+            if (plugin.processArtifactMetadata) {
+                await plugin.processArtifactMetadata(metadata, project);
+            }
+        }
+
+        for (let platform of project.platforms) {
             console.log();
             console.log(
-                this.platformSpecified ?
-                    `Generating artifact of project ${Style.project(name)} ${Style.dim(`(${platform})`)}...` :
+                project.platformSpecified ?
+                    `Generating artifact of project ${Style.project(name)} ${Style.dim(`(${platform.name})`)}...` :
                     `Generating artifact of project ${Style.project(name)}...`
             );
             console.log();
 
-            let id = this.platformSpecified ?
-                `${name}-${platform}` : name;
+            let idTemplate = this.config.id || (project.platformSpecified ? '{name}-{platform}' : '{name}');
+
+            let id = project.renderTemplate(idTemplate, {
+                platform: project.platformSpecified ? platform.name : undefined
+            });
 
             let archiver = Archiver.create('zip', {});
 
             let mappings = this
                 .mappings
-                .filter(mapping => !mapping.platformSet || mapping.platformSet.has(platform));
+                .filter(mapping => !mapping.platformSet || mapping.platformSet.has(platform.name));
 
-            await this.walk(mappings, platform, archiver);
+            await this.walk(mappings, platform.name, archiver);
 
             archiver.finalize();
 
-            let path = Path.join(this.distDir, `${id}.zip`);
+            let path = Path.join(project.distDir, `${id}.zip`);
 
             let writeStream = FS.createWriteStream(path);
 
@@ -186,13 +148,12 @@ export class Artifact {
 
             artifacts.push({
                 id,
-                name,
-                platform: this.platformSpecified ? platform : undefined,
-                path: Path.relative(process.cwd(), path)
+                platform: project.platformSpecified ? platform.name : undefined,
+                path: Path.relative(project.dir, path)
             });
         }
 
-        let metadataFilePath = Path.join(this.distDir, `${name}.json`);
+        let metadataFilePath = Path.join(project.distDir, `${name}.json`);
         let metadataJSON = JSON.stringify(metadata, undefined, 4);
 
         await invoke(FS.writeFile, metadataFilePath, metadataJSON);

@@ -1,7 +1,9 @@
 import {
+    ArtifactMetadata,
     DependencyConfiguration,
     DependencyResult,
-    DependencyContext
+    DependencyContext,
+    Project
 } from './';
 
 export interface PluginConstructor {
@@ -11,5 +13,7 @@ export interface PluginConstructor {
 export type NullableDependencyResult = DependencyResult | undefined;
 
 export abstract class Plugin {
-    abstract resolveDependency?(dependency: DependencyConfiguration, context: DependencyContext): NullableDependencyResult | Promise<NullableDependencyResult>;
+    loadVariables?(project: Project): Dictionary<any> | Promise<Dictionary<any>>;
+    resolveDependency?(dependency: DependencyConfiguration, context: DependencyContext): NullableDependencyResult | Promise<NullableDependencyResult>;
+    processArtifactMetadata?(metadata: ArtifactMetadata, project: Project): void | Promise<void>;
 }

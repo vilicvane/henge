@@ -35,26 +35,7 @@ export default class extends Plugin {
                 }
             }
 
-            let testArtifacts: typeof metadata.artifacts = [
-                {
-                    id: name,
-                    name,
-                    path: 'native_modules.zip',
-                    platform: 'win32'
-                },
-                {
-                    id: name,
-                    name,
-                    path: 'native_modules.zip',
-                    platform: 'darwin'
-                }
-            ];
-
-            for (let artifact of metadata.artifacts || testArtifacts) {
-                if (artifact.name !== name) {
-                    continue;
-                }
-
+            for (let artifact of metadata.artifacts || []) {
                 if (artifact.platform && artifact.platform !== context.platform) {
                     continue;
                 }

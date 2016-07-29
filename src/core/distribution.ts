@@ -13,53 +13,65 @@ import {
     ArtifactConfiguration,
     Dependency,
     DependencyConfiguration,
+    PackageData,
+    PlatformConfiguration,
+    PlatformInfo,
     Plugin,
     PluginConstructor,
     Procedure,
-    ProcedureConfiguration
+    ProcedureConfiguration,
+    ProjectConfiguration
 } from './';
 
 import * as Style from '../utils/style';
+import * as Template from '../utils/template';
 
-export interface ProjectConfiguration {
-    name: string;
-    distDir?: string;
-    dependencyDir?: string;
-    plugins?: string[];
-    platform?: PlatformConfiguration;
-    platforms?: PlatformConfiguration[];
-    dependencies?: DependencyConfiguration[];
-    procedures?: ProcedureConfiguration[];
-    artifact: ArtifactConfiguration;
+export interface Variables {
+    env: Dictionary<string>;
+    [key: string]: any;
 }
 
-export interface PlatformInfo {
-    name: string;
-    env?: Dictionary<string>;
+export interface ProjectOptions {
+    dir: string;
+    packageData: PackageData;
 }
-
-export type PlatformConfiguration = string | PlatformInfo;
 
 export class Project extends EventEmitter {
     readonly name: string;
+    readonly version: string;
 
-    private plugins: Plugin[];
+    readonly platformSpecified: boolean;
+    readonly platforms: PlatformInfo[];
 
-    private platformSpecified: boolean;
-    private platforms: PlatformInfo[];
-    private platformNames: string[];
+    readonly dir: string;
+    readonly distDir: string;
+    readonly depsDir: string;
 
-    private distDir: string;
-    private depsDir: string;
+    readonly dependencyDirMap = new Map<string, string>();
 
-    private dependencyDirMap = new Map<string, string>();
+    variables: Variables;
+
+    plugins: Plugin[];
 
     constructor(
-        private config: ProjectConfiguration
+        private config: ProjectConfiguration,
+        {
+            dir,
+            packageData
+        }: ProjectOptions
     ) {
         super();
 
-        this.name = config.name;
+        this.dir = dir;
+
+        this.name = config.name || packageData.name;
+        this.version = config.version || packageData.version;
+
+        this.variables = {
+            name: this.name,
+            version: this.version,
+            env: Object.assign({}, process.env)
+        };
 
         let platforms = config.platforms || (config.platform ? [config.platform] : undefined);
 
@@ -72,11 +84,34 @@ export class Project extends EventEmitter {
                 { name: config } : config;
         });
 
-        this.platformNames = this.platforms.map(platform => platform.name);
-
         this.distDir = Path.resolve(config.distDir || 'dist');
         this.depsDir = config.dependencyDir ?
             Path.resolve(config.dependencyDir) : Path.join(this.distDir, 'deps');
+    }
+
+    private async loadPlugins(names: string[]): Promise<Plugin[]> {
+        let plugins: Plugin[] = [];
+
+        for (let name of names) {
+            let baseDir: string;
+
+            if (!Path.isAbsolute(name)) {
+                if (/^\./.test(name)) {
+                    name = Path.resolve(name);
+                } else {
+                    name = await invoke<string>(resolve, name, {
+                        basedir: this.dir
+                    } as resolve.AsyncOpts);
+                }
+            }
+
+            let pluginModule = require(name);
+            let PluginConstructor: PluginConstructor = pluginModule.__esModule ? pluginModule.default : pluginModule;
+
+            plugins.push(new PluginConstructor());
+        }
+
+        return plugins;
     }
 
     private async prepareDependencies(dependencies: DependencyConfiguration[]): Promise<void> {
@@ -92,11 +127,7 @@ export class Project extends EventEmitter {
         let packageSet = new Set<string>();
 
         for (let config of dependencies) {
-            let dependency = new Dependency(config, {
-                depsDir: this.depsDir,
-                platforms: this.platformNames,
-                plugins: this.plugins
-            });
+            let dependency = new Dependency(config, this);
 
             let infos = await dependency.prepare();
 
@@ -112,22 +143,14 @@ export class Project extends EventEmitter {
 
     private async executeProcedures(procedures: ProcedureConfiguration[]): Promise<void> {
         for (let config of procedures) {
-            let procedure = new Procedure(config, {
-                platforms: this.platformNames
-            });
+            let procedure = new Procedure(config, this);
 
             await procedure.execute();
         }
     }
 
     private async generateArtifacts(): Promise<void> {
-        let artifact = new Artifact(this.config.artifact, {
-            projectName: this.name,
-            distDir: this.distDir,
-            platformSpecified: this.platformSpecified,
-            platforms: this.platformNames,
-            dependencyDirMap: this.dependencyDirMap
-        });
+        let artifact = new Artifact(this.config.artifact, this);
 
         await artifact.generate();
     }
@@ -138,13 +161,20 @@ export class Project extends EventEmitter {
 
         let config = this.config;
 
-        let pluginIds = config.plugins || [];
-
-        pluginIds = pluginIds.concat([
+        let pluginIds = [
+            Path.join(__dirname, '../plugins/variables-loader'),
+            ...(config.plugins || []),
             Path.join(__dirname, '../plugins/dependency-resolver')
-        ]);
+        ];
 
-        this.plugins = await Project.loadPlugins(pluginIds);
+        this.plugins = await this.loadPlugins(pluginIds);
+
+        for (let plugin of this.plugins) {
+            if (plugin.loadVariables) {
+                let variables = await plugin.loadVariables(this);
+                Object.assign(this.variables, variables);
+            }
+        }
     }
 
     async distribute(): Promise<void> {
@@ -164,28 +194,8 @@ export class Project extends EventEmitter {
         await invoke(FS.remove, this.distDir);
     }
 
-    private static async loadPlugins(names: string[]): Promise<Plugin[]> {
-        let plugins: Plugin[] = [];
-
-        for (let name of names) {
-            let baseDir: string;
-
-            if (!Path.isAbsolute(name)) {
-                if (/^\./.test(name)) {
-                    name = Path.resolve(name);
-                } else {
-                    name = await invoke<string>(resolve, name, {
-                        basedir: process.cwd()
-                    } as resolve.AsyncOpts);
-                }
-            }
-
-            let pluginModule = require(name);
-            let PluginConstructor: PluginConstructor = pluginModule.__esModule ? pluginModule.default : pluginModule;
-
-            plugins.push(new PluginConstructor());
-        }
-
-        return plugins;
+    renderTemplate(template: string, ...variableObjects: Dictionary<any>[]): string {
+        let data = Object.assign(this.variables, ...variableObjects);
+        return Template.render(template, data);
     }
 }

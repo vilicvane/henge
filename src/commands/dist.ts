@@ -1,3 +1,5 @@
+import * as Path from 'path';
+
 import {
     Command,
     ExpectedError,
@@ -13,6 +15,8 @@ import {
     Project,
     File
 } from '../core';
+
+import { getPackageFile } from '../utils/json-file';
 
 import cli from '../cli';
 
@@ -40,6 +44,7 @@ export default class extends Command {
         options: DistributeOptions
     ) {
         let configFile = options.config;
+        let packageFile = getPackageFile(Path.dirname(configFile.fullName));
 
         await configFile.assert();
 
@@ -80,7 +85,10 @@ export default class extends Command {
         let projects: Project[] = [];
 
         for (let config of configs) {
-            let project = new Project(config);
+            let project = new Project(config, {
+                dir: packageFile.dir,
+                packageData: packageFile.data
+            });
 
             await project.load();
 

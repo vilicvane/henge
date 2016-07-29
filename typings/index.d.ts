@@ -6,3 +6,4 @@
 /// <reference path="globals/which/index.d.ts" />
 /// <reference path="modules/chalk/index.d.ts" />
 /// <reference path="modules/minimatch/index.d.ts" />
+/// <reference path="modules/semver/index.d.ts" />

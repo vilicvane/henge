@@ -5,52 +5,30 @@ import P from 'thenfail';
 import * as which from 'which';
 
 import {
-    Configuration
+    Configuration,
+    PlatformInfo,
+    ProcedureConfiguration,
+    Project
 } from './';
 
 import * as Style from '../utils/style';
 
 const NPM_EXECUTABLE = which.sync('npm');
 
-export interface TaskDescriptor {
-    name: string;
-    args?: string[];
-}
-
-export interface CommandDescriptor {
-    name: string;
-    args?: string[];
-}
-
-export type TaskConfiguration = string | TaskDescriptor;
-export type CommandConfiguration = string | CommandDescriptor;
-
-export interface ProcedureConfiguration {
-    description?: string;
-    task?: TaskConfiguration;
-    command?: CommandConfiguration;
-    multiplatform?: boolean;
-    platform?: string;
-    platforms?: string[];
-}
-
-export interface ProcedureOptions {
-    platforms: string[];
-}
-
 export class Procedure {
     readonly description: string;
-
-    private platforms?: string[];
 
     private command: string;
     private args: string[];
 
     constructor(
         private config: ProcedureConfiguration,
-        options: ProcedureOptions
+        private project: Project
     ) {
-        this.platforms = Configuration.getMatchedPlatforms(config, options.platforms);
+        let {
+            platforms,
+            specified: platformSpecified
+        } = Configuration.getMatchedPlatforms(config, project.platforms);
 
         let description = config.description;
 
@@ -93,14 +71,22 @@ export class Procedure {
     }
 
     async execute(): Promise<void> {
-        let platforms = this.platforms || [undefined];
+        let project = this.project;
+        let argTemplates = this.args;
 
-        for (let platform of platforms) {
+        for (let platform of project.platforms) {
             console.log();
-            console.log(this.description);
+            console.log(this.description, Style.dim(`(${platform.name})`));
 
-            let cp = spawn(this.command, this.args, {
-                stdio: 'inherit'
+            let env = Object.assign({}, process.env, platform.env);
+
+            let args = argTemplates.map(arg => project.renderTemplate(arg, {
+                platform: platform.name
+            }));
+
+            let cp = spawn(this.command, args, {
+                stdio: 'inherit',
+                env
             });
 
             await P.for(cp);

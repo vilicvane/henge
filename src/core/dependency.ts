@@ -7,17 +7,16 @@ import * as fetch from 'node-fetch';
 import P, { invoke } from 'thenfail';
 
 import {
+    Configuration,
+    DependencyConfiguration,
     Plugin,
+    PlatformInfo,
     PlatformSpecifier,
-    Configuration
+    Project
 } from './';
 
 export interface DependencyContext {
     platform: string | undefined;
-}
-
-export interface DependencyConfiguration extends PlatformSpecifier {
-    name: string;
 }
 
 export interface DependencyResult {
@@ -32,44 +31,45 @@ export interface DependencyInfo extends DependencyResult {
     packagePath: string;
 }
 
-export interface DependencyOptions {
-    depsDir: string;
-    plugins: Plugin[];
-    platforms: string[];
-}
-
 export class Dependency {
     readonly name: string;
     readonly platformSpecified: boolean;
 
-    private depsDir: string;
-    private platforms: string[];
-    private plugins: Plugin[];
+    private platforms: PlatformInfo[];
 
     constructor(
         private config: DependencyConfiguration,
-        options: DependencyOptions
+        private project: Project
     ) {
-        let multiplatform = config.multiplatform || false;
-        let platforms = Configuration.getMatchedPlatforms(config, options.platforms);
-
         this.name = config.name;
 
-        this.platformSpecified = !!platforms;
-        this.platforms = platforms || [process.platform];
-        this.depsDir = options.depsDir;
-        this.plugins = options.plugins;
+        let {
+            platforms,
+            specified: platformSpecified
+        } = Configuration.getMatchedPlatforms(config, project.platforms);
+
+        this.platforms = platforms;
+        this.platformSpecified = platformSpecified;
     }
 
     private async resolve(platform: string): Promise<DependencyInfo> {
-        for (let plugin of this.plugins) {
-            let result = await plugin.resolveDependency!(this.config, {
+        let {
+            plugins,
+            depsDir
+        } = this.project;
+
+        for (let plugin of plugins) {
+            if (!plugin.resolveDependency) {
+                continue;
+            }
+
+            let result = await plugin.resolveDependency(this.config, {
                 platform
             });
 
             if (result) {
                 let name = this.name;
-                let dir = Path.join(this.depsDir, name);
+                let dir = Path.join(depsDir, name);
 
                 if (this.platformSpecified) {
                     dir += `-${platform}`;
@@ -111,7 +111,7 @@ export class Dependency {
         let infos: DependencyInfo[] = [];
 
         for (let platform of platforms) {
-            let info = await this.resolve(platform);
+            let info = await this.resolve(platform.name);
 
             if (packageSet.has(info.packagePath)) {
                 continue;
