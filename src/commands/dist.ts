@@ -44,7 +44,8 @@ export default class extends Command {
         options: DistributeOptions
     ) {
         let configFile = options.config;
-        let packageFile = getPackageFile(Path.dirname(configFile.fullName));
+
+        let { dir, data: packageData } = getPackageFile(Path.dirname(configFile.fullName));
 
         await configFile.assert();
 
@@ -57,11 +58,7 @@ export default class extends Command {
         let projectConfigMap = new Map<string, ProjectConfiguration>();
 
         for (let config of configs) {
-            let name = config.name;
-
-            if (!name) {
-                throw new ExpectedError('Project name is required');
-            }
+            let name = config.name || packageData.name;
 
             if (projectConfigMap.has(name)) {
                 throw new ExpectedError(`Duplicated project name "${name}"`);
@@ -86,8 +83,8 @@ export default class extends Command {
 
         for (let config of configs) {
             let project = new Project(config, {
-                dir: packageFile.dir,
-                packageData: packageFile.data
+                dir,
+                packageData
             });
 
             await project.load();

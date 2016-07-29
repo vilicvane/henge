@@ -195,13 +195,15 @@ export class Artifact {
 
         let baseName = Path.basename(pattern);
 
-        if (!/(?:^|[\\/])\*\*[\\/]?$/.test(path)) {
-            // If not something like "**/", "foo/**".
-            path = Path.join(path, '**');
-        }
+        if (path.endsWith(Path.sep)) {
+            if (!/(?:^|[\\/])\*\*[\\/]$/.test(path)) {
+                // If not something like "**/" or "abc/**/".
+                path = Path.join(path, '**');
+            }
 
-        if (baseName !== '**') {
-            path = Path.join(path, baseName);
+            if (baseName !== '**') {
+                path = Path.join(path, baseName);
+            }
         }
 
         return {
