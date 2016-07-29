@@ -1,7 +1,7 @@
 {
   "name": "henge",
   "description": "Henge Distribution Workshop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "bld/index.js",
   "bin": {
     "henge": "bld/cli.js"
@@ -9,8 +9,9 @@
   "dependencies": {
     "archiver": "^1.0.1",
     "chalk": "^1.1.3",
-    "clime": "^0.3.2",
+    "clime": "^0.3.3",
     "dotgit": "^0.1.1",
+    "extract-zip": "https://github.com/vilic/extract-zip/tarball/1e552d1883e5152c5e62f38ab5f700fe1653c3cd",
     "fs-extra": "^0.30.0",
     "node-fetch": "^1.5.3",
     "resolve": "^1.1.7",
