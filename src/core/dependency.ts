@@ -114,7 +114,7 @@ export class Dependency {
             let dir = Path.join(depsDir, name);
 
             if (this.platformSpecified) {
-                dir += `-${platform}`;
+                dir += `-${platform.name}`;
             }
 
             return {
