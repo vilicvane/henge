@@ -1,3 +1,5 @@
+import { Dictionary } from '../lang';
+
 export interface PackageData {
     name: string;
     version: string;
@@ -57,7 +59,7 @@ export interface ArtifactMetadata {
 
 export interface ArtifactConfiguration {
     id?: string;
-    root?: string;
+    baseDir?: string;
     files: FileMappingConfiguration[];
 }
 

@@ -1,6 +1,6 @@
 import * as Chalk from 'chalk';
 
-export function project(text: string): string {
+export function id(text: string): string {
     return Chalk.bold.yellow(`"${text}"`);
 }
 

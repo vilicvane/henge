@@ -8,6 +8,8 @@ import * as fetch from 'node-fetch';
 import * as resolve from 'resolve';
 import P, { invoke } from 'thenfail';
 
+import { Dictionary } from '../lang';
+
 import {
     Artifact,
     ArtifactConfiguration,
@@ -157,7 +159,7 @@ export class Project extends EventEmitter {
 
     async load(): Promise<void> {
         console.log();
-        console.log(`Loading project ${Style.project(this.name)}...`);
+        console.log(`Loading project ${Style.id(this.name)}...`);
 
         let config = this.config;
 
@@ -189,7 +191,7 @@ export class Project extends EventEmitter {
 
     async clean(): Promise<void> {
         console.log();
-        console.log(`Cleaning previous distribution of project ${Style.project(this.name)}...`);
+        console.log(`Cleaning previous distribution of project ${Style.id(this.name)}...`);
 
         await invoke(FS.remove, this.distDir);
     }

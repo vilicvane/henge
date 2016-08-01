@@ -9,6 +9,8 @@ import {
     Project
 } from '../core';
 
+import { Dictionary } from '../lang';
+
 export class Commit {
     short: string;
     long: string;

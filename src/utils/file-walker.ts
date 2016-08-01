@@ -4,6 +4,8 @@ import * as Path from 'path';
 import { ExpectedError } from 'clime';
 import { invoke } from 'thenfail';
 
+import { Dictionary } from '../lang';
+
 export type Capture = string | string[];
 
 export type WalkHandler = (path: string, captures: Capture[]) => void;

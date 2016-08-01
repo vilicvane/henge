@@ -55,7 +55,6 @@ export class Artifact {
             let mappingPath = mapping.path;
 
             await walker.walk(baseDir, (path, captures) => {
-                // archiver.
                 let pathInArtifact = Artifact.buildPath(mappingPath, captures);
 
                 archiver.file(Path.join(baseDir, path), {
@@ -68,7 +67,7 @@ export class Artifact {
     }
 
     private resolveBaseDir(mapping: FileMapping, platform: string): string {
-        let baseDir: string;
+        let baseDir: string | undefined;
 
         let packageName = mapping.package;
         let project = this.project;
@@ -76,16 +75,28 @@ export class Artifact {
         if (packageName) {
             baseDir =
                 project.platformSpecified && project.dependencyDirMap.get(`${packageName}\t${platform}`) ||
-                project.dependencyDirMap.get(packageName) ||
-                project.dir;
+                project.dependencyDirMap.get(packageName);
+
+            if (!baseDir) {
+                throw new ExpectedError(`Dependency package "${packageName}" not found`);
+            }
 
             if (mapping.baseDir) {
                 baseDir = Path.resolve(baseDir, mapping.baseDir);
             }
-        } else if (mapping.baseDir){
-            baseDir = Path.resolve(mapping.baseDir);
         } else {
-            baseDir = project.dir;
+            let dirs = [project.dir];
+
+            let config = this.config;
+            if (config.baseDir) {
+                dirs.push(config.baseDir);
+            }
+
+            if (mapping.baseDir) {
+                dirs.push(mapping.baseDir);
+            }
+
+            baseDir = Path.resolve(...dirs);
         }
 
         return baseDir;
@@ -114,8 +125,8 @@ export class Artifact {
             console.log();
             console.log(
                 project.platformSpecified ?
-                    `Generating artifact of project ${Style.project(name)} ${Style.dim(`(${platform.name})`)}...` :
-                    `Generating artifact of project ${Style.project(name)}...`
+                    `Generating artifact of project ${Style.id(name)} ${Style.dim(`(${platform.name})`)}...` :
+                    `Generating artifact of project ${Style.id(name)}...`
             );
             console.log();
 
@@ -149,7 +160,7 @@ export class Artifact {
             artifacts.push({
                 id,
                 platform: project.platformSpecified ? platform.name : undefined,
-                path: Path.relative(project.dir, path).replace(/\\/g, '/')
+                path: Path.relative(project.distDir, path)
             });
         }
 
