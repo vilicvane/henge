@@ -53,4 +53,4 @@ module.exports = {
 ```
 
 For a complete configuration options, please checkout, for now,
-[[blob/master/src/core/configuration.ts]].
+[[src/core/configuration.ts]].
