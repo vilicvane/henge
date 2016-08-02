@@ -1,7 +1,7 @@
 {
   "name": "henge",
   "description": "Henge Distribution Workshop",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "bld/index.js",
   "typings": "bld/index.d.ts",
   "bin": {
