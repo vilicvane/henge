@@ -119,8 +119,6 @@ export class Procedure {
                     value = project.renderTemplate(value, data);
                 }
 
-                console.log(key, value);
-
                 env[key] = value;
             }
 
