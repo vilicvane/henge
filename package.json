@@ -1,11 +1,19 @@
 {
   "name": "henge",
   "description": "Henge Distribution Workshop",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "main": "bld/index.js",
   "typings": "bld/index.d.ts",
   "bin": {
     "henge": "bld/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vilic/henge"
+  },
+  "bugs": {
+    "email": "i@vilic.info",
+    "url": "https://github.com/vilic/henge/issues"
   },
   "dependencies": {
     "archiver": "^1.0.1",
