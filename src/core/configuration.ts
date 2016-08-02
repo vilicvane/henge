@@ -13,11 +13,15 @@ export interface PlatformSpecifier {
 
 export interface TaskDescriptor {
     name: string;
+    cwd?: string;
+    env?: Dictionary<string>;
     args?: string[];
 }
 
 export interface CommandDescriptor {
     name: string;
+    cwd?: string;
+    env?: Dictionary<string>;
     args?: string[];
 }
 
@@ -79,7 +83,7 @@ export interface ProjectConfiguration {
 export interface PlatformInfo {
     name: string;
     env?: Dictionary<string>;
-    data?: Dictionary<any>;
+    variables?: Dictionary<any>;
 }
 
 export type PlatformConfiguration = string | PlatformInfo;

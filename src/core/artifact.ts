@@ -49,6 +49,8 @@ export class Artifact {
     }
 
     private async walk(mappings: FileMapping[], platform: string, archiver: Archiver.Archiver): Promise<void> {
+        let projectDir = this.project.dir;
+
         for (let mapping of mappings) {
             let walker = new FileWalker(mapping.pattern);
             let baseDir = this.resolveBaseDir(mapping, platform);
@@ -57,11 +59,13 @@ export class Artifact {
             await walker.walk(baseDir, (path, captures) => {
                 let pathInArtifact = Artifact.buildPath(mappingPath, captures);
 
-                archiver.file(Path.join(baseDir, path), {
+                path = Path.join(baseDir, path);
+
+                archiver.file(path, {
                     name: pathInArtifact
                 });
 
-                console.log(path, Style.dim('->'), pathInArtifact);
+                console.log(Path.relative(projectDir, path), Style.dim('->'), pathInArtifact);
             });
         }
     }
