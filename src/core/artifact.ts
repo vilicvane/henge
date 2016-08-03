@@ -10,7 +10,6 @@ import {
     ArtifactMetadata,
     ArtifactMetadataItem,
     FileMappingConfiguration,
-    PlatformInfo,
     Project
 } from './';
 
@@ -23,11 +22,6 @@ export interface FileMapping {
     pattern: string;
     path: string;
     platformSet: Set<string> | undefined;
-}
-
-interface FileInfo {
-    path: string;
-    captures: Capture[];
 }
 
 export class Artifact {
