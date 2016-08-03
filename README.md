@@ -1,3 +1,5 @@
+[![NPM Package](https://badge.fury.io/js/henge.svg)](https://www.npmjs.com/package/henge)
+
 # Henge Distribution Workshop
 
 <img alt="Henge" src="https://cloud.githubusercontent.com/assets/970430/17336611/8bcad8ec-5911-11e6-9d32-2948976b1843.png" width="240" height="240" />
@@ -9,6 +11,7 @@ building and packaging easy and configurable.
 
 ```sh
 npm install henge --save-dev
+npm install henge --global
 ```
 
 ## Usage
