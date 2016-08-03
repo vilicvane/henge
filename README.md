@@ -5,7 +5,7 @@
 Henge is a distribution workshop that makes multiplatform and multistage project
 building and packaging easy and configurable.
 
-## Install
+## Installation
 
 ```sh
 npm install henge --save-dev
@@ -75,11 +75,11 @@ module.exports = {
 };
 ```
 
-#### Artifact Configuration
-
 The artifact configuration has following options:
 
 - **id<sup>tpl</sup>?:** Specify the ID of artifact to generate.
+- **baseDir<sup>tpl</sup>:** Specify the project directory in which should the
+  file mappings be based on.
 - **files:** Specify an array of `FileMappingConfiguration`.
 
 #### File Mapping Configuration
@@ -114,3 +114,47 @@ And as `path` defaults to the value of `pattern`, this example is equivalent to:
     path: 'src/**'
 }
 ```
+
+### Platform Configuration
+
+A project configuration can have target `platform` or `platforms` specified:
+
+```js
+module.exports = {
+    platforms: [
+        'mips',
+        'arm'
+    ],
+    artifact: {
+        id: '{name}-{version}-{platform}'
+        files: [
+            {
+                pattern: 'res/{platform}/**',
+                path: 'res/**'
+            }
+        ]
+    }
+};
+```
+
+In this example, Henge will generate two artifact for both `mips` and `arm`
+platforms. And they will have files under directory `res/mips` and `res/arm`
+packed into `res` directory in artifacts respectively.
+
+A platform entry can also be a `PlatformInfo`, which has the following options:
+
+- **name:** Specify the name of platform.
+- **variables?:** Specify additional template variables for this specific
+  platform.
+- **env<sup>tpl</sup>?:** Specify additional environment variables for this
+  specific platform.
+
+### Procedure Configuration
+
+### Dependency Configuration
+
+### Plugin Configuration
+
+## License
+
+MIT License.
