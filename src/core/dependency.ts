@@ -35,6 +35,7 @@ export interface DependencyInfo extends DependencyResult {
 export class Dependency {
     readonly name: string;
     readonly platformSpecified: boolean;
+    readonly kit: boolean;
 
     private platforms: PlatformInfo[];
 
@@ -49,10 +50,11 @@ export class Dependency {
         let {
             platforms,
             specified: platformSpecified
-        } = Configuration.getMatchedPlatforms(config, project.platforms);
+        } = Configuration.getMatchedDependencyPlatforms(config, project.platforms, project.host.platform);
 
         this.platforms = platforms;
         this.platformSpecified = platformSpecified;
+        this.kit = !!config.kit;
     }
 
     private async resolve(platform: PlatformInfo): Promise<DependencyInfo> {
@@ -89,7 +91,7 @@ export class Dependency {
                     try {
                         metadata = await response.json<ArtifactMetadata>();
                     } catch (error) {
-                        throw new ExpectedError(`Error parsing metadata of dependency "${name}"`);
+                        throw new ExpectedError(`Error parsing metadata of dependency "${name}" from URL "${metadataUrl}"`);
                     }
 
                     Dependency.metadataCache.set(metadataUrl, metadata);
@@ -113,7 +115,7 @@ export class Dependency {
 
             let dir = Path.join(depsDir, name);
 
-            if (this.platformSpecified) {
+            if (this.platformSpecified && !this.kit) {
                 dir += `-${platform.name}`;
             }
 

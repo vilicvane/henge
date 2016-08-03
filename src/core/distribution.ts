@@ -38,6 +38,10 @@ export interface ProjectOptions {
     packageData: PackageData;
 }
 
+export interface ProjectHost {
+    platform: string;
+}
+
 export class Project extends EventEmitter {
     readonly name: string;
     readonly version: string;
@@ -52,6 +56,7 @@ export class Project extends EventEmitter {
     readonly dependencyDirMap = new Map<string, string>();
 
     variables: Variables;
+    host: ProjectHost;
 
     plugins: Plugin[];
 
@@ -69,9 +74,14 @@ export class Project extends EventEmitter {
         this.name = config.name || packageData.name;
         this.version = config.version || packageData.version;
 
+        this.host = {
+            platform: config.host && config.host.platform || process.platform
+        };
+
         this.variables = {
             name: this.name,
             version: this.version,
+            host: this.host,
             env: Object.assign({}, process.env)
         };
 
@@ -134,7 +144,7 @@ export class Project extends EventEmitter {
             let infos = await dependency.prepare();
 
             for (let info of infos) {
-                if (dependency.platformSpecified) {
+                if (dependency.platformSpecified && !dependency.kit) {
                     this.dependencyDirMap.set(`${info.name}\t${info.platform}`, info.dir);
                 } else {
                     this.dependencyDirMap.set(info.name, info.dir);

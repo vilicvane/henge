@@ -2,3 +2,6 @@
 
 /bld/
 /node_modules/
+/dist/
+
+/dist.config.js
