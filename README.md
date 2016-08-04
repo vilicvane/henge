@@ -141,6 +141,34 @@ And as `path` defaults to the value of `pattern`, this example is equivalent to:
 }
 ```
 
+The file mapping of Henge provides a light-weight, yet flexible way to mapping
+the source to path in an artifact.
+
+Option `pattern` supports `*` (wildcard) and `**` (glob stars). For example, to
+match all `.js` files under `src` folder, we may have `'src/**/*.js'`.
+
+Correspondent `*` and `**` (counting from end to the beginning) in `path` will
+be expanded to form an actual path. For example, if `pattern` `'src/**/*.js'`
+matches file `src/foo/bar/stone.js`, `path` `'out/**/*/index.js'` will be
+expanded as `out/foo/bar/stone/index.js`.
+
+Henge will append `Path.basename(pattern)` to `path` automatically if it
+ends with `/`. For example, the following two configurations are equivalent:
+
+```js
+{
+    pattern: 'foo/*.js',
+    path: 'bar/'
+}
+```
+
+```js
+{
+    pattern: 'foo/*.js',
+    path: 'bar/*.js'
+}
+```
+
 ### Platform Configuration
 
 A project configuration can have target `platform` or `platforms` specified:
