@@ -122,12 +122,13 @@ export class Procedure {
                 env[key] = value;
             }
 
+            let cwd = project.renderTemplate(this.cwd, data);
             let args = argTemplates.map(arg => project.renderTemplate(arg, data));
 
             let cp = spawn(this.command, args, {
-                cwd: this.cwd,
-                stdio: 'inherit',
-                env
+                cwd,
+                env,
+                stdio: 'inherit'
             });
 
             await P.for(cp);

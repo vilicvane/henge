@@ -225,7 +225,56 @@ Supported options for a `DependencyConfiguration`:
 
 ### Procedure Configuration
 
-### Plugin Configuration
+A `ProcedureConfiguration` entry has following options:
+
+- **description?:** Description of this procedure.
+- **task?:** A task procedure, could be either a `string` or
+  `TaskDescriptor`.
+- **command?:** A command procedure, could be either a `string` or
+  `CommandDescriptor`.
+- **multiplatform?:** If true, it's equivalent to have `platforms` option the
+  same values as `project.platforms`.
+- **platforms?:** Specify on what platforms should this procedure be executed.
+- **platform?:** Specify on what platform should this procedure be executed.
+
+#### Task Configuration
+
+A task configured as string `"<task-name>"` is equivalent to the following
+`TaskDescriptor`:
+
+```js
+{
+    name: '<task-name>'
+}
+```
+
+It will be executed as `npm run <task-name>`. If any arguments, it will be
+executed as `npm run <task-name> -- <...args>`.
+
+A `TaskDescriptor` has following options:
+
+- **name:** Name of npm task.
+- **cwd<sup>tpl</sup>?:** Working directory for the task.
+- **env<sup>tpl</sup>?:** Environment variables for this task.
+- **args<sup>tpl</sup>?:** Arguments for this task.
+
+#### Command Configuration
+
+A command configured as string `"<command-name>"` is equivalent to the following
+`CommandDescriptor`:
+
+```js
+{
+    name: '<command-name>'
+}
+```
+
+A `CommandDescriptor` has following options:
+
+- **name:** Name of npm command.
+- **cwd<sup>tpl</sup>?:** Working directory for the command.
+- **env<sup>tpl</sup>?:** Environment variables for this command.
+- **args<sup>tpl</sup>?:** Arguments for this command.
 
 ## License
 
