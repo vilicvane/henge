@@ -276,6 +276,32 @@ A `CommandDescriptor` has following options:
 - **env<sup>tpl</sup>?:** Environment variables for this command.
 - **args<sup>tpl</sup>?:** Arguments for this command.
 
+## Variables
+
+A variable is used in a configuration with template support. For example, I have
+`artifact.id` configured as `'{name}-{version}-{platform}'` for generating
+artifacts named after the template.
+
+Many of Henge options (those marked with<sup>tpl</sup>) support template
+placeholders, and here is a table of built-in variables:
+
+### Project Scope Variables
+
+| Name | Description |
+| - | - |
+| `name` | Name of the project |
+| `version` | Version of the project |
+| `host.platform` | Host platform of the project |
+| `env.<name>` | Environment variable |
+| `...` | Additional variables added by plugins |
+
+### Dependency/Procedure/Artifact Scope Variables
+
+| Name | Description |
+| - | - |
+| `platform` | Platform of one target artifact |
+| `...` | Additional variables defined with platforms |
+
 ## License
 
 MIT License.
