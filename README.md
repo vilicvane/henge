@@ -288,7 +288,7 @@ placeholders, and here is a table of built-in variables:
 ### Project Scope Variables
 
 | Name | Description |
-| - | - |
+| --- | --- |
 | `name` | Name of the project |
 | `version` | Version of the project |
 | `host.platform` | Host platform of the project |
@@ -298,7 +298,7 @@ placeholders, and here is a table of built-in variables:
 ### Dependency/Procedure/Artifact Scope Variables
 
 | Name | Description |
-| - | - |
+| --- | --- |
 | `platform` | Platform of one target artifact |
 | `...` | Additional variables defined with platforms |
 
