@@ -31,10 +31,6 @@ export class Artifact {
         private config: ArtifactConfiguration,
         private project: Project
     ) {
-        if (!config) {
-            throw new ExpectedError('Missing `artifact` configuration');
-        }
-
         if (!config.files) {
             throw new ExpectedError('Missing `files` field in `artifact` configuration');
         }

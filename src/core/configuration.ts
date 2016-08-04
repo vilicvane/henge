@@ -88,7 +88,7 @@ export interface ProjectConfiguration {
     platforms?: PlatformConfiguration[] | string;
     dependencies?: DependencyConfiguration[];
     procedures?: ProcedureConfiguration[];
-    artifact: ArtifactConfiguration;
+    artifact?: ArtifactConfiguration;
 }
 
 export interface PlatformInfo {

@@ -151,9 +151,12 @@ export class Project extends EventEmitter {
     }
 
     private async generateArtifacts(): Promise<void> {
-        let artifact = new Artifact(this.config.artifact, this);
+        let config = this.config.artifact;
 
-        await artifact.generate();
+        if (config) {
+            let artifact = new Artifact(config, this);
+            await artifact.generate();
+        }
     }
 
     async load(): Promise<void> {
