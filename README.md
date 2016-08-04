@@ -1,4 +1,5 @@
-[![NPM Package](https://badge.fury.io/js/henge.svg)](https://www.npmjs.com/package/henge)
+[![NPM Package](https://badge.fury.io/js/henge.svg)](https://www.npmjs.com/packa
+ge/henge)
 
 # Henge Distribution Workshop
 
@@ -19,10 +20,9 @@ npm install henge --global
 For a complete configuration options, please checkout, for now,
 [src/core/configuration.ts](src/core/configuration.ts).
 
-## Distribution Configuration
+## Project Configuration
 
-A `dist.config.js` file may export one or more project distribution
-configurations:
+A `dist.config.js` file may export one or more `ProjectConfiguration`:
 
 ```js
 module.exports = {
@@ -56,13 +56,26 @@ command `henge dist`:
 henge dist mobile
 ```
 
-A project has the following options:
+A `ProjectConfiguration` has the following options:
 
-- **name?:** Specify the name of distribution project, this is required for
-  multi-project configuration, and defaults to `"name"` in `package.json`.
-- **baseDir<sup>tpl</sup>:** Specify the project directory in which should the
-  file mappings be based on.
-- **files:** Specify an array of `FileMappingConfiguration`.
+- **name?:** Name of distribution project, this is required for multi-project
+  configuration, and defaults to the value of field `"name"` in `package.json`.
+- **version?:** Version of distribution project, defaults to the value of field
+  `"version"` in `package.json`.
+- **distDir?:** Distribution directory, defaults to `dist` folder under project
+  directory.
+- **depsDir?:** Directory for dependencies, defaults to `deps` folder under
+  distribution directory.
+- **plugins?:** An array of plugins to be loaded, could either be the name of an
+  npm package or a path to JavaScript module.
+- **host?:** Host options.
+  - **platform?:** Host platform, defaults to `process.platform`.
+- **platforms<sup>tpl</sup>?:** An array of target platforms, could also be a
+  string of configuration JSON file URL.
+- **platform?:** Target platform.
+- **dependencies?:** Artifacts this this distribution depends on.
+- **procedures?:** Procedures to be proceeded for the distribution.
+- **artifact?:** Artifact configuration for this distribution.
 
 ### Artifact Configuration
 
@@ -91,24 +104,23 @@ By default, the configuration above will get artifact generated at
 
 The artifact configuration has following options:
 
-- **id<sup>tpl</sup>?:** Specify the ID of artifact to generate.
+- **id<sup>tpl</sup>?:** The ID of artifact to generate.
 - **baseDir<sup>tpl</sup>:** Specify the project directory in which should the
   file mappings be based on.
-- **files:** Specify an array of `FileMappingConfiguration`.
+- **files:** An array of `FileMappingConfiguration`.
 
 #### File Mapping Configuration
 
 An entry in `files` field is a `FileMappingConfiguration`, which could be either
 a `string` or a `FileMappingDescriptor` with the following options:
 
-- **pattern<sup>tpl</sup>:** Specify pattern that matches project files to be
-  added.
+- **pattern<sup>tpl</sup>:** The pattern that matches project files to be added.
 - **baseDir<sup>tpl</sup>?:** Specify the project directory in which should the
   mapping be based on.
 - **package?:** Specify the dependency package in which should the mapping be
   based on.
-- **path<sup>tpl</sup>?:** Specify the path of file inside the artifact,
-  defaults to the same value of `pattern` option.
+- **path<sup>tpl</sup>?:** The path of file inside the artifact, defaults to the
+  same value of `pattern` option.
 - **platform?:** Limit this file mapping configuration to specific platform.
 - **platforms?:** Limit this file mapping configuration to specific platforms.
 
@@ -157,11 +169,10 @@ packed into `res` directory in artifacts respectively.
 
 A platform entry can also be a `PlatformInfo`, which has the following options:
 
-- **name:** Specify the name of platform.
-- **variables?:** Specify additional template variables for this specific
+- **name:** Name of platform.
+- **variables?:** Additional template variables for this specific platform.
+- **env<sup>tpl</sup>?:** Additional environment variables for this specific
   platform.
-- **env<sup>tpl</sup>?:** Specify additional environment variables for this
-  specific platform.
 
 ### Dependency Configuration
 
@@ -203,13 +214,14 @@ several branches.
 
 Supported options for a `DependencyConfiguration`:
 
-- **name:** Specify the name of dependency.
+- **name:** Name of the artifact this distribution depends on.
 - **kit?:** Whether this dependency is a tool rather than part of the product.
   If `kit` is `true`, platform related options for this dependency are then
   subject to host platform instead of target platforms.
-- **multiplatform?:**
-- **platform?:**
-- **platforms?:**
+- **multiplatform?:** If true, it's equivalent to have `platforms` option the
+  same values as `project.platforms` or `host.platform` if `kit` is true.
+- **platforms?:** Specify dependency of what platforms is to be prepared.
+- **platform?:** Specify dependency of what platform is to be prepared.
 
 ### Procedure Configuration
 

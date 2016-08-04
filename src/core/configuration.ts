@@ -81,7 +81,7 @@ export interface ProjectConfiguration {
     name?: string;
     version?: string;
     distDir?: string;
-    dependencyDir?: string;
+    depsDir?: string;
     plugins?: string[];
     host?: HostConfiguration;
     platform?: PlatformConfiguration;

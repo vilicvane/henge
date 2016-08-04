@@ -86,8 +86,8 @@ export class Project extends EventEmitter {
         };
 
         this.distDir = Path.resolve(config.distDir || 'dist');
-        this.depsDir = config.dependencyDir ?
-            Path.resolve(config.dependencyDir) : Path.join(this.distDir, 'deps');
+        this.depsDir = config.depsDir ?
+            Path.resolve(config.depsDir) : Path.join(this.distDir, 'deps');
     }
 
     private async loadPlugins(names: string[]): Promise<Plugin[]> {

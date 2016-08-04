@@ -57,7 +57,7 @@ export default class extends Command {
 
         let projectConfigMap = new Map<string, ProjectConfiguration>();
 
-        for (let config of configs) {
+        for (let config of configs as ProjectConfiguration[]) {
             let name = config.name || packageData.name;
 
             if (projectConfigMap.has(name)) {
@@ -81,7 +81,7 @@ export default class extends Command {
 
         let projects: Project[] = [];
 
-        for (let config of configs) {
+        for (let config of configs as ProjectConfiguration[]) {
             let project = new Project(config, {
                 dir,
                 packageData
