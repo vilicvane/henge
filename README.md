@@ -78,6 +78,9 @@ module.exports = {
 };
 ```
 
+By default, the configuration above will get artifact generated at
+`dist/<package-name>.zip` with a metadata file `dist/<package-name>.json`.
+
 The artifact configuration has following options:
 
 - **id<sup>tpl</sup>?:** Specify the ID of artifact to generate.
@@ -101,7 +104,7 @@ a `string` or a `FileMappingDescriptor` with the following options:
 - **platform?:** Limit this file mapping configuration to specific platform.
 - **platforms?:** Limit this file mapping configuration to specific platforms.
 
-An `string` entry, for example `"src/**"`, is equivalent to:
+A `string` entry, for example `"src/**"`, is equivalent to:
 
 ```js
 {
@@ -152,9 +155,53 @@ A platform entry can also be a `PlatformInfo`, which has the following options:
 - **env<sup>tpl</sup>?:** Specify additional environment variables for this
   specific platform.
 
-### Procedure Configuration
-
 ### Dependency Configuration
+
+Another important feature provided by Henge is dependency handling, especially
+for the purpose of packaging built products together. Henge will need to know
+the metadata or zip file URL of a dependency to get it prepared:
+
+```js
+module.exports = {
+    dependencies: [
+        {
+            name: 'static-files',
+            metadata: 'http://<jenkins-hostname>/job/static-files/lastSuccessfulBuild/artifact/dist/static-files.json'
+        }
+    ]
+};
+```
+
+Assuming that `static-files` is also distributed by Henge, the metadata
+generated will tell what is/are the artifact(s).
+
+You can also write a plugin to resolve dependencies with certain options by
+yourself, consider this:
+
+```js
+module.exports = {
+    dependencies: [
+        {
+            name: 'static-files',
+            job: 'static-files'
+        }
+    ]
+};
+```
+
+Your plugin can use your own options and generate a valid metadata or package
+URL for Henge to handle. This is very helpful for multiplatform build with
+several branches.
+
+Supported options for a `DependencyConfiguration`:
+
+- **name:** Specify the name of dependency.
+- **kit?:** Whether this dependency is a tool rather than part of the product.
+- **multiplatform?:**
+- **platform?:**
+- **platforms?:**
+
+### Procedure Configuration
 
 ### Plugin Configuration
 
