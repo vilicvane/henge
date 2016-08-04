@@ -72,7 +72,7 @@ export class Dependency {
                 continue;
             }
 
-            let result = await plugin.resolveDependency(this.config, project, this.platformSpecified ? platform : undefined);
+            let result = await plugin.resolveDependency(this.config, this.platformSpecified ? platform : undefined);
 
             if (!result) {
                 continue;

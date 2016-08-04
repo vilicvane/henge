@@ -46,8 +46,8 @@ export class Project extends EventEmitter {
     readonly name: string;
     readonly version: string;
 
-    readonly platformSpecified: boolean;
-    readonly platforms: PlatformInfo[];
+    platformSpecified: boolean;
+    platforms: PlatformInfo[];
 
     readonly dir: string;
     readonly distDir: string;
@@ -85,17 +85,6 @@ export class Project extends EventEmitter {
             env: Object.assign({}, process.env)
         };
 
-        let platforms = config.platforms || (config.platform ? [config.platform] : undefined);
-
-        this.platformSpecified = !!platforms;
-
-        platforms = platforms || [process.platform];
-
-        this.platforms = platforms.map(config => {
-            return typeof config === 'string' ?
-                { name: config } : config;
-        });
-
         this.distDir = Path.resolve(config.distDir || 'dist');
         this.depsDir = config.dependencyDir ?
             Path.resolve(config.dependencyDir) : Path.join(this.distDir, 'deps');
@@ -120,7 +109,7 @@ export class Project extends EventEmitter {
             let pluginModule = require(name);
             let PluginConstructor: PluginConstructor = pluginModule.__esModule ? pluginModule.default : pluginModule;
 
-            plugins.push(new PluginConstructor());
+            plugins.push(new PluginConstructor(this));
         }
 
         return plugins;
@@ -174,7 +163,6 @@ export class Project extends EventEmitter {
         let config = this.config;
 
         let pluginIds = [
-            Path.join(__dirname, '../plugins/variables-loader'),
             ...(config.plugins || []),
             Path.join(__dirname, '../plugins/dependency-resolver')
         ];
@@ -183,10 +171,29 @@ export class Project extends EventEmitter {
 
         for (let plugin of this.plugins) {
             if (plugin.loadVariables) {
-                let variables = await plugin.loadVariables(this);
+                let variables = await plugin.loadVariables();
                 Object.assign(this.variables, variables);
             }
         }
+
+        let platforms = config.platforms || (config.platform ? [config.platform] : undefined);
+
+        if (typeof platforms === 'string') {
+            let url = this.renderTemplate(platforms);
+            console.log(`Resolving platforms configuration from ${Style.url(url)}...`);
+
+            let response = await fetch(url);
+            platforms = await response.json<PlatformConfiguration[]>();
+        }
+
+        this.platformSpecified = !!platforms;
+
+        platforms = platforms || [process.platform];
+
+        this.platforms = platforms.map(config => {
+            return typeof config === 'string' ?
+                { name: config } : config;
+        });
     }
 
     async distribute(): Promise<void> {

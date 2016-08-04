@@ -56,6 +56,14 @@ command `henge dist`:
 henge dist mobile
 ```
 
+A project has the following options:
+
+- **name?:** Specify the name of distribution project, this is required for
+  multi-project configuration, and defaults to `"name"` in `package.json`.
+- **baseDir<sup>tpl</sup>:** Specify the project directory in which should the
+  file mappings be based on.
+- **files:** Specify an array of `FileMappingConfiguration`.
+
 ### Artifact Configuration
 
 Configurable artifact packaging is one of the most important features provided
@@ -197,6 +205,8 @@ Supported options for a `DependencyConfiguration`:
 
 - **name:** Specify the name of dependency.
 - **kit?:** Whether this dependency is a tool rather than part of the product.
+  If `kit` is `true`, platform related options for this dependency are then
+  subject to host platform instead of target platforms.
 - **multiplatform?:**
 - **platform?:**
 - **platforms?:**

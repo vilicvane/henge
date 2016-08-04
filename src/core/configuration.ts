@@ -85,7 +85,7 @@ export interface ProjectConfiguration {
     plugins?: string[];
     host?: HostConfiguration;
     platform?: PlatformConfiguration;
-    platforms?: PlatformConfiguration[];
+    platforms?: PlatformConfiguration[] | string;
     dependencies?: DependencyConfiguration[];
     procedures?: ProcedureConfiguration[];
     artifact: ArtifactConfiguration;

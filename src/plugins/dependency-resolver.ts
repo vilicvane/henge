@@ -13,7 +13,7 @@ import {
 export default class implements Plugin {
     private metadataCache = new Map<string, ArtifactMetadata>();
 
-    async resolveDependency(config: any, project: Project, platform: PlatformInfo | undefined): Promise<NullableDependencyResult> {
+    async resolveDependency(config: any, platform: PlatformInfo | undefined): Promise<NullableDependencyResult> {
         let name = (config as DependencyConfiguration).name;
         let url = config.url as string | undefined;
 

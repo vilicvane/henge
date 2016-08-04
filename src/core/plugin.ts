@@ -9,13 +9,13 @@ import {
 } from './';
 
 export interface PluginConstructor {
-    new(): Plugin;
+    new(project: Project): Plugin;
 }
 
 export type NullableDependencyResult = DependencyResult | undefined;
 
 export interface Plugin {
-    loadVariables?(project: Project): Dictionary<any> | Promise<Dictionary<any>>;
-    resolveDependency?(config: DependencyConfiguration, project: Project, platform: PlatformInfo | undefined): NullableDependencyResult | Promise<NullableDependencyResult>;
-    processArtifactMetadata?(metadata: ArtifactMetadata, project: Project): void | Promise<void>;
+    loadVariables?(): Dictionary<any> | Promise<Dictionary<any>>;
+    resolveDependency?(config: DependencyConfiguration, platform: PlatformInfo | undefined): NullableDependencyResult | Promise<NullableDependencyResult>;
+    processArtifactMetadata?(metadata: ArtifactMetadata): void | Promise<void>;
 }

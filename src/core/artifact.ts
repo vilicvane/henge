@@ -121,7 +121,7 @@ export class Artifact {
 
         for (let plugin of project.plugins) {
             if (plugin.processArtifactMetadata) {
-                await plugin.processArtifactMetadata(metadata, project);
+                await plugin.processArtifactMetadata(metadata);
             }
         }
 
