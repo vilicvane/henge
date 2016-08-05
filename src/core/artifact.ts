@@ -10,6 +10,7 @@ import {
     ArtifactMetadata,
     ArtifactMetadataItem,
     FileMappingConfiguration,
+    PlatformInfo,
     Project
 } from './';
 
@@ -38,15 +39,15 @@ export class Artifact {
         this.mappings = config.files.map(config => Artifact.normalizeMapping(config));
     }
 
-    private async walk(mappings: FileMapping[], platform: string, archiver: Archiver.Archiver): Promise<void> {
+    private async walk(mappings: FileMapping[], platform: PlatformInfo, archiver: Archiver.Archiver): Promise<void> {
         let project = this.project;
 
-        let data = {
-            platform
-        };
+        let data = Object.assign({
+            platform: platform.name
+        }, platform.variables);
 
         for (let mapping of mappings) {
-            let baseDir = project.renderTemplate(this.resolveBaseDir(mapping, platform), data);
+            let baseDir = project.renderTemplate(this.resolveBaseDir(mapping, platform.name), data);
             let mappingPattern = project.renderTemplate(mapping.pattern, data);
             let mappingPath = project.renderTemplate(mapping.path, data);
 
@@ -142,7 +143,7 @@ export class Artifact {
                 .mappings
                 .filter(mapping => !mapping.platformSet || mapping.platformSet.has(platform.name));
 
-            await this.walk(mappings, platform.name, archiver);
+            await this.walk(mappings, platform, archiver);
 
             archiver.finalize();
 

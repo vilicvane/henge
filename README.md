@@ -6,7 +6,11 @@ ge/henge)
 <img alt="Henge" src="https://cloud.githubusercontent.com/assets/970430/17336611/8bcad8ec-5911-11e6-9d32-2948976b1843.png" width="240" height="240" />
 
 Henge is a distribution workshop that makes multiplatform and multistage project
-building and packaging easy and configurable.
+building and packaging easy and configurable. It is originally designed for
+building projects of [Ruff](https://ruff.io/), of which many projects are
+required be to compiled for multiple platforms, including desktop operating
+systems and embedded operating systems. This makes handling dependencies and
+packaging for different platforms and branches a painful story.
 
 ## Installation
 
