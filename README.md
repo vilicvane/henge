@@ -8,7 +8,7 @@ ge/henge)
 Henge is a distribution workshop that makes multiplatform and multistage project
 building and packaging easy and configurable. It is originally designed for
 building projects of [Ruff](https://ruff.io/), of which many projects are
-required be to compiled for multiple platforms, including desktop operating
+required to be compiled for multiple platforms, including desktop operating
 systems and embedded operating systems. This makes handling dependencies and
 packaging for different platforms and branches a painful story.
 
@@ -111,6 +111,7 @@ The artifact configuration has following options:
 - **id<sup>tpl</sup>?:** The ID of artifact to generate.
 - **baseDir<sup>tpl</sup>:** Specify the project directory in which should the
   file mappings be based on.
+- **targetDir<sup>tpl</sup>:** The target directory inside artifact.
 - **files:** An array of `FileMappingConfiguration`.
 
 #### File Mapping Configuration

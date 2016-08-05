@@ -70,6 +70,7 @@ export interface ArtifactMetadata {
 export interface ArtifactConfiguration {
     id?: string;
     baseDir?: string;
+    targetDir?: string;
     files: FileMappingConfiguration[];
 }
 

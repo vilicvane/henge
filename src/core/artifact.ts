@@ -36,11 +36,12 @@ export class Artifact {
             throw new ExpectedError('Missing `files` field in `artifact` configuration');
         }
 
-        this.mappings = config.files.map(config => Artifact.normalizeMapping(config));
+        this.mappings = config.files.map(config => this.normalizeMapping(config));
     }
 
     private async walk(mappings: FileMapping[], platform: PlatformInfo, archiver: Archiver.Archiver): Promise<void> {
         let project = this.project;
+        let targetDir = this.config.targetDir;
 
         let data = Object.assign({
             platform: platform.name
@@ -50,6 +51,10 @@ export class Artifact {
             let baseDir = project.renderTemplate(this.resolveBaseDir(mapping, platform.name), data);
             let mappingPattern = project.renderTemplate(mapping.pattern, data);
             let mappingPath = project.renderTemplate(mapping.path, data);
+
+            if (targetDir) {
+                mappingPath = Path.join(project.renderTemplate(targetDir), mappingPath);
+            }
 
             let walker = new FileWalker(mappingPattern);
 
@@ -174,7 +179,7 @@ export class Artifact {
         console.log(`Artifact metadata generated at path ${Style.path(metadataFilePath)}.`);
     }
 
-    private static normalizeMapping(config: FileMappingConfiguration): FileMapping {
+    private normalizeMapping(config: FileMappingConfiguration): FileMapping {
         let packageName: string | undefined;
         let pattern: string;
         let baseDir: string | undefined;
