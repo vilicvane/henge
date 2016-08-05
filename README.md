@@ -70,11 +70,11 @@ A `ProjectConfiguration` has the following options:
   npm package or a path to JavaScript module.
 - **host?:** Host options.
   - **platform?:** Host platform, defaults to `process.platform`.
-- **platforms<sup>tpl</sup>?:** An array of target platforms, could also be a
-  string of configuration JSON file URL.
+- **platforms?:** An array of target platforms, could also be a
+  `string` of configuration JSON file URL<sup>tpl</sup>.
 - **platform?:** Target platform.
-- **dependencies?:** Artifacts this this distribution depends on.
-- **procedures?:** Procedures to be proceeded for the distribution.
+- **dependencies?:** Artifacts this distribution depends on.
+- **procedures?:** Procedures to be proceeded for this distribution.
 - **artifact?:** Artifact configuration for this distribution.
 
 ### Artifact Configuration
