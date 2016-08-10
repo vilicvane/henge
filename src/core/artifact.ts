@@ -11,6 +11,7 @@ import {
     ArtifactMetadataItem,
     FileMappingConfiguration,
     PlatformInfo,
+    Plugin,
     Project
 } from './';
 
@@ -121,9 +122,15 @@ export class Artifact {
             artifacts
         };
 
+        let defaultIdPlugin: Plugin | undefined;
+
         for (let plugin of project.plugins) {
             if (plugin.processArtifactMetadata) {
                 await plugin.processArtifactMetadata(metadata);
+            }
+
+            if (plugin.getDefaultArtifactId) {
+                defaultIdPlugin = plugin;
             }
         }
 
@@ -136,7 +143,11 @@ export class Artifact {
             );
             console.log();
 
-            let idTemplate = this.config.id || (project.platformSpecified ? '{name}-{platform}' : '{name}');
+            let idTemplate = this.config.id || (
+                defaultIdPlugin ?
+                    await defaultIdPlugin.getDefaultArtifactId!(project.platformSpecified ? platform : undefined) :
+                    (project.platformSpecified ? '{name}-{platform}' : '{name}')
+            );
 
             let id = project.renderTemplate(idTemplate, {
                 platform: project.platformSpecified ? platform.name : undefined

@@ -36,6 +36,8 @@ export interface Variables {
 export interface ProjectOptions {
     dir: string;
     packageData: PackageData;
+    local: boolean;
+    platforms: string[] | undefined;
 }
 
 export interface ProjectHost {
@@ -48,7 +50,9 @@ export class Project extends EventEmitter {
 
     platformSpecified: boolean;
     platforms: PlatformInfo[];
+    limitedPlatformSet: Set<string> | undefined;
 
+    readonly local: boolean;
     readonly dir: string;
     readonly distDir: string;
     readonly depsDir: string;
@@ -64,12 +68,16 @@ export class Project extends EventEmitter {
         private config: ProjectConfiguration,
         {
             dir,
-            packageData
+            packageData,
+            local,
+            platforms: limitedPlatforms
         }: ProjectOptions
     ) {
         super();
 
         this.dir = dir;
+        this.local = local;
+        this.limitedPlatformSet = limitedPlatforms && new Set(limitedPlatforms);
 
         this.name = config.name || packageData.name;
         this.version = config.version || packageData.version;
@@ -172,6 +180,10 @@ export class Project extends EventEmitter {
 
         this.plugins = await this.loadPlugins(pluginIds);
 
+        let platforms = config.platforms || (config.platform ? [config.platform] : undefined);
+
+        this.platformSpecified = !!platforms;
+
         for (let plugin of this.plugins) {
             if (plugin.loadVariables) {
                 let variables = await plugin.loadVariables();
@@ -179,24 +191,33 @@ export class Project extends EventEmitter {
             }
         }
 
-        let platforms = config.platforms || (config.platform ? [config.platform] : undefined);
-
         if (typeof platforms === 'string') {
-            let url = this.renderTemplate(platforms);
-            console.log(`Resolving platforms configuration from ${Style.url(url)}...`);
+            let urlOrPath = this.renderTemplate(platforms);
+            console.log(`Resolving platforms configuration from ${Style.url(urlOrPath)}...`);
 
-            let response = await fetch(url);
-            platforms = await response.json<PlatformConfiguration[]>();
+            if (/^https?:\/\//.test(urlOrPath)) {
+                let response = await fetch(urlOrPath);
+                platforms = await response.json<PlatformConfiguration[]>();
+            } else {
+                platforms = require(Path.resolve(urlOrPath)) as PlatformConfiguration[];
+            }
         }
-
-        this.platformSpecified = !!platforms;
 
         platforms = platforms || [process.platform];
 
-        this.platforms = platforms.map(config => {
+        platforms = platforms.map(config => {
             return typeof config === 'string' ?
                 { name: config } : config;
         });
+
+        let limitedPlatformSet = this.limitedPlatformSet;
+
+        if (limitedPlatformSet) {
+            platforms = platforms
+                .filter(info => limitedPlatformSet!.has((info as PlatformInfo).name));
+        }
+
+        this.platforms = platforms as PlatformInfo[];
     }
 
     async distribute(): Promise<void> {

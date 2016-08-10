@@ -49,7 +49,18 @@ export class File {
         }
     }
 
-    static cast(name: string, context: Context) {
-        return new File(name, context.cwd);
+    static cast(name: string, context: Context): File {
+        return new this(name, context.cwd);
+    }
+}
+
+export class CommaSeperatedStrings extends Array<string> {
+    static cast(line: string): CommaSeperatedStrings {
+        let values = line
+            .split(',')
+            .map(str => str.trim())
+            .filter(str => !!str);
+
+        return new this(...values);
     }
 }

@@ -13,7 +13,8 @@ import {
 import {
     ProjectConfiguration,
     Project,
-    File
+    File,
+    CommaSeperatedStrings
 } from '../core';
 
 import { getPackageFile } from '../utils/json-file';
@@ -28,6 +29,20 @@ export class DistributeOptions extends Options {
         default: 'dist.config.js'
     })
     config: File;
+
+    @option({
+        description: 'Specify a platform or comma seperated platforms to distribute.',
+        name: 'platform',
+        flag: 'p'
+    })
+    platforms: CommaSeperatedStrings;
+
+    @option({
+        description: 'Perform a local distribution.',
+        flag: 'l',
+        toggle: true
+    })
+    local: boolean;
 }
 
 @command({
@@ -44,6 +59,7 @@ export default class extends Command {
         options: DistributeOptions
     ) {
         let configFile = options.config;
+        let local = options.local;
 
         let { dir, data: packageData } = getPackageFile(Path.dirname(configFile.fullName));
 
@@ -84,7 +100,9 @@ export default class extends Command {
         for (let config of configs as ProjectConfiguration[]) {
             let project = new Project(config, {
                 dir,
-                packageData
+                packageData,
+                local,
+                platforms: options.platforms
             });
 
             await project.load();

@@ -1,4 +1,7 @@
-import { Dictionary } from '../lang';
+import {
+    Dictionary,
+    Resolvable
+} from '../lang';
 
 import {
     ArtifactMetadata,
@@ -15,7 +18,8 @@ export interface PluginConstructor {
 export type NullableDependencyResult = DependencyResult | undefined;
 
 export interface Plugin {
-    loadVariables?(): Dictionary<any> | Promise<Dictionary<any>>;
-    resolveDependency?(config: DependencyConfiguration, platform: PlatformInfo | undefined): NullableDependencyResult | Promise<NullableDependencyResult>;
-    processArtifactMetadata?(metadata: ArtifactMetadata): void | Promise<void>;
+    loadVariables?(): Resolvable<Dictionary<any>>;
+    resolveDependency?(config: DependencyConfiguration, platform: PlatformInfo | undefined): Resolvable<NullableDependencyResult>;
+    getDefaultArtifactId?(platform: PlatformInfo | undefined): Resolvable<string>;
+    processArtifactMetadata?(metadata: ArtifactMetadata): Resolvable<void>;
 }

@@ -1,7 +1,7 @@
 import { Dictionary } from '../lang';
 
 export function render(template: string, data: Dictionary<any>): string {
-    return template.replace(/\{([$\w.-]+)\}/g, (text: string, expression: string) => {
+    let result = template.replace(/\{([$\w.-]+)\}/g, (text: string, expression: string) => {
         let keys = expression.split('.');
 
         let node: any = data;
@@ -16,4 +16,6 @@ export function render(template: string, data: Dictionary<any>): string {
 
         return node;
     });
+
+    return result === template ? result : render(result, data);
 }
