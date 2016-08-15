@@ -181,8 +181,8 @@ export class Dependency {
 
             console.log(
                 this.platformSpecified ?
-                    `Downloading dependency ${Style.id(name)} ${Style.dim(`(${platform.name})`)}...` :
-                    `Downloading dependency ${Style.id(name)}...`
+                    `Downloading dependency ${Style.id(name)} ${Style.dim(`(${platform.name})`)} from ${Style.url(info.url)}...` :
+                    `Downloading dependency ${Style.id(name)} from ${Style.url(info.url)}...`
             );
 
             await this.download(info);
