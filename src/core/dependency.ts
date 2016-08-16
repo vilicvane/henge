@@ -189,8 +189,8 @@ export class Dependency {
 
             console.log(
                 this.platformSpecified ?
-                    `Extracting dependency ${Style.id(name)} ${Style.dim(`(${platform.name})`)}...` :
-                    `Extracting dependency ${Style.id(name)}...`
+                    `Extracting dependency ${Style.id(name)} ${Style.dim(`(${platform.name})`)} to ${Style.path(info.dir)}...` :
+                    `Extracting dependency ${Style.id(name)} to ${Style.path(info.dir)}...`
             );
 
             await this.extract(info);
