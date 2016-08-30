@@ -304,7 +304,7 @@ A command configured as string `"<command-name>"` is equivalent to the following
 
 A `CommandDescriptor` has following options:
 
-- **name:** Name of npm command.
+- **name:** Name of command.
 - **cwd<sup>tpl</sup>?:** Working directory for the command.
 - **env<sup>tpl</sup>?:** Environment variables for this command.
 - **args<sup>tpl</sup>?:** Arguments for this command.
