@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 
 import { ExpectedError } from 'clime';
-import P from 'thenfail';
+import { awaitable } from 'villa';
 import * as which from 'which';
 
 import {
@@ -131,7 +131,7 @@ export class Procedure {
                 stdio: 'inherit'
             });
 
-            await P.for(cp);
+            await awaitable(cp);
         }
     }
 }

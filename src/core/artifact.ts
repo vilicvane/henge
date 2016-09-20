@@ -3,7 +3,7 @@ import * as FS from 'fs';
 
 import * as Archiver from 'archiver';
 import { ExpectedError } from 'clime';
-import P, { invoke } from 'thenfail';
+import { awaitable, call as acall } from 'villa';
 
 import {
     ArtifactConfiguration,
@@ -169,7 +169,7 @@ export class Artifact {
 
             archiver.pipe(writeStream);
 
-            await P.for(writeStream, 'close', [archiver]);
+            await awaitable(writeStream, 'close', [archiver]);
 
             console.log();
             console.log(`Artifact generated at path ${Style.path(path)}.`);
@@ -184,7 +184,7 @@ export class Artifact {
         let metadataFilePath = Path.join(project.distDir, `${name}.json`);
         let metadataJSON = JSON.stringify(metadata, undefined, 4);
 
-        await invoke(FS.writeFile, metadataFilePath, metadataJSON);
+        await acall<void>(FS.writeFile, metadataFilePath, metadataJSON);
 
         console.log();
         console.log(`Artifact metadata generated at path ${Style.path(metadataFilePath)}.`);

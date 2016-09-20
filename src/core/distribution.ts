@@ -6,7 +6,7 @@ import { ExpectedError } from 'clime';
 import * as extractZip from 'extract-zip';
 import * as fetch from 'node-fetch';
 import * as resolve from 'resolve';
-import P, { invoke } from 'thenfail';
+import { awaitable, call as acall } from 'villa';
 
 import { Dictionary } from '../lang';
 
@@ -108,7 +108,7 @@ export class Project extends EventEmitter {
                 if (/^\./.test(name)) {
                     name = Path.resolve(name);
                 } else {
-                    name = await invoke<string>(resolve, name, {
+                    name = await acall<string>(resolve, name, {
                         basedir: this.dir
                     } as resolve.AsyncOpts);
                 }
@@ -131,7 +131,7 @@ export class Project extends EventEmitter {
         console.log();
         console.log('Preparing dependencies...');
 
-        await invoke(FS.ensureDir, this.depsDir);
+        await acall<void>(FS.ensureDir, this.depsDir);
 
         let packageSet = new Set<string>();
 
@@ -223,7 +223,7 @@ export class Project extends EventEmitter {
     async distribute(): Promise<void> {
         let config = this.config;
 
-        await invoke(FS.ensureDir, this.distDir);
+        await acall<void>(FS.ensureDir, this.distDir);
 
         await this.prepareDependencies(config.dependencies || []);
         await this.executeProcedures(config.procedures || []);
@@ -234,7 +234,7 @@ export class Project extends EventEmitter {
         console.log();
         console.log(`Cleaning previous distribution of project ${Style.id(this.name)}...`);
 
-        await invoke(FS.remove, this.distDir);
+        await acall<void>(FS.remove, this.distDir);
     }
 
     renderTemplate(template: string, ...variableObjects: Dictionary<any>[]): string {

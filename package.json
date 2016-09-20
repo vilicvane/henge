@@ -1,7 +1,7 @@
 {
   "name": "henge",
-  "description": "Henge Distribution Workshop",
-  "version": "0.2.6",
+  "description": "A tool that generates artifacts for upstream projects and make them configurable dependencies for downstream projects.",
+  "version": "0.2.7",
   "main": "bld/index.js",
   "typings": "bld/index.d.ts",
   "bin": {
@@ -26,10 +26,10 @@
     "resolve": "^1.1.7",
     "semver": "^5.3.0",
     "source-map-support": "^0.4.2",
-    "thenfail": "^0.4.10",
+    "villa": "^0.2.1",
     "which": "^1.2.10"
   },
   "devDependencies": {
-    "typescript": "^2.0.0"
+    "typescript": "^2.0.2"
   }
 }

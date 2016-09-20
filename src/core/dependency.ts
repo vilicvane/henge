@@ -5,7 +5,7 @@ import { ExpectedError } from 'clime';
 import * as FS from 'fs-extra';
 import * as extractZip from 'extract-zip';
 import * as fetch from 'node-fetch';
-import P, { invoke } from 'thenfail';
+import { awaitable, call as acall } from 'villa';
 
 import {
     ArtifactMetadata,
@@ -143,11 +143,11 @@ export class Dependency {
 
         responseStream.pipe(writeStream);
 
-        await P.for(writeStream, 'close', [responseStream]);
+        await awaitable(writeStream, 'close', [responseStream]);
     }
 
     private async extract(info: DependencyInfo): Promise<void> {
-        await invoke(extractZip, info.packagePath, {
+        await acall<void>(extractZip, info.packagePath, {
             dir: info.dir
         } as extractZip.Options);
     }

@@ -7,7 +7,7 @@ import {
     StringCastable
 } from 'clime';
 
-import { invoke } from 'thenfail';
+import { call as acall } from 'villa';
 
 export class File {
     readonly baseName: string;
@@ -33,7 +33,7 @@ export class File {
         let stats: FS.Stats | undefined;
 
         try {
-            stats = await invoke<FS.Stats>(FS.stat, this.fullName);
+            stats = await acall<FS.Stats>(FS.stat, this.fullName);
         } catch (error) { }
 
         if (exists) {

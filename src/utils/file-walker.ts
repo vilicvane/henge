@@ -2,7 +2,7 @@ import * as FS from 'fs';
 import * as Path from 'path';
 
 import { ExpectedError } from 'clime';
-import { invoke } from 'thenfail';
+import { call as acall } from 'villa';
 
 import { Dictionary } from '../lang';
 
@@ -171,7 +171,7 @@ export class FileWalker {
         let stats: FS.Stats | undefined;
 
         try {
-            stats = await invoke<FS.Stats>(FS.stat, path);
+            stats = await acall<FS.Stats>(FS.stat, path);
         } catch (error) { }
 
         this.statsCache![path] = stats;
@@ -184,7 +184,7 @@ export class FileWalker {
             return this.readdirCache![path];
         }
 
-        let names = await invoke<string[]>(FS.readdir, path);
+        let names = await acall<string[]>(FS.readdir, path);
 
         this.readdirCache![path] = names;
 
