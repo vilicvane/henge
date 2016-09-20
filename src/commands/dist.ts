@@ -7,14 +7,13 @@ import {
     command,
     option,
     params,
-    Printable
+    Printable,
+    Object as ClimeObject
 } from 'clime';
 
 import {
     ProjectConfiguration,
-    Project,
-    File,
-    CommaSeperatedStrings
+    Project
 } from '../core';
 
 import { getPackageFile } from '../utils/json-file';
@@ -28,14 +27,14 @@ export class DistributeOptions extends Options {
         placeholder: 'filename',
         default: 'dist.config.js'
     })
-    config: File;
+    config: ClimeObject.File;
 
     @option({
         description: 'Specify a platform or comma seperated platforms to distribute.',
         name: 'platform',
         flag: 'p'
     })
-    platforms: CommaSeperatedStrings;
+    platforms: ClimeObject.CommaSeperatedStrings;
 
     @option({
         description: 'Perform a local distribution.',
