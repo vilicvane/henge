@@ -252,7 +252,8 @@ Supported options for a `DependencyConfiguration`:
   If `kit` is `true`, platform related options for this dependency are then
   subject to host platform instead of target platforms.
 - **multiplatform?:** If true, it's equivalent to have `platforms` option the
-  same values as `project.platforms` or `host.platform` if `kit` is true.
+  same values as `project.platforms` or `[host.platform]` if `kit` is true. And
+  the dependency will be extracted in folder with no `-{platform}` suffix.
 - **platforms?:** Specify dependency of what platforms is to be prepared.
 - **platform?:** Specify dependency of what platform is to be prepared.
 
