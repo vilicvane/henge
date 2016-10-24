@@ -20,8 +20,9 @@ import {
 import * as Style from '../utils/style';
 
 export interface DependencyResult {
-    url: string;
     metadata?: boolean;
+    url: string;
+    strip?: number;
 }
 
 export interface DependencyInfo extends DependencyResult {
@@ -30,6 +31,7 @@ export interface DependencyInfo extends DependencyResult {
     url: string;
     dir: string;
     packagePath: string;
+    strip: number;
 }
 
 export class Dependency {
@@ -124,7 +126,8 @@ export class Dependency {
                 platform: platform.name,
                 url,
                 dir,
-                packagePath: dir + '.zip'
+                packagePath: dir + '.zip',
+                strip: result.strip || 0
             };
         }
 
@@ -139,6 +142,9 @@ export class Dependency {
         }
 
         let responseStream = response.body;
+
+        await acall(FS.ensureDir, Path.dirname(info.packagePath));
+
         let writeStream = FS.createWriteStream(info.packagePath);
 
         responseStream.pipe(writeStream);
@@ -148,7 +154,8 @@ export class Dependency {
 
     private async extract(info: DependencyInfo): Promise<void> {
         await acall<void>(extractZip, info.packagePath, {
-            dir: info.dir
+            dir: info.dir,
+            strip: info.strip
         } as extractZip.Options);
     }
 
