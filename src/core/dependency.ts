@@ -36,6 +36,7 @@ export interface DependencyInfo extends DependencyResult {
 
 export class Dependency {
     readonly name: string;
+    readonly targetDirTemplate?: string;
     readonly platformSpecified: boolean;
     readonly kit: boolean;
 
@@ -48,6 +49,7 @@ export class Dependency {
         private project: Project
     ) {
         this.name = config.name;
+        this.targetDirTemplate = config.targetDir;
 
         let {
             platforms,
@@ -64,7 +66,8 @@ export class Dependency {
 
         let {
             plugins,
-            depsDir
+            depsDir,
+            dir: projectDir
         } = project;
 
         let name = this.name;
@@ -115,10 +118,24 @@ export class Dependency {
                 url = result.url;
             }
 
-            let dir = Path.join(depsDir, name);
+            let dir: string;
+
+            let defaultDir = Path.join(depsDir, name);
 
             if (this.platformSpecified && !this.kit) {
-                dir += `-${platform.name}`;
+                defaultDir += `-${platform.name}`;
+            }
+
+            let targetDirTemplate = this.targetDirTemplate;
+
+            if (targetDirTemplate) {
+                let data = Object.assign({
+                    platform: platform.name
+                }, platform.variables);
+
+                dir = Path.resolve(projectDir, project.renderTemplate(targetDirTemplate, data));
+            } else {
+                dir = defaultDir;
             }
 
             return {
@@ -126,7 +143,7 @@ export class Dependency {
                 platform: platform.name,
                 url,
                 dir,
-                packagePath: dir + '.zip',
+                packagePath: defaultDir + '.zip',
                 strip: result.strip || 0
             };
         }

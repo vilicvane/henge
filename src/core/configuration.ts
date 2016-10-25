@@ -102,6 +102,7 @@ export type PlatformConfiguration = string | PlatformInfo;
 
 export interface DependencyConfiguration extends DependencyPlatformSpecifier {
     name: string;
+    targetDir?: string;
 }
 
 export namespace Configuration {
