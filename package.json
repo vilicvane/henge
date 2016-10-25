@@ -1,7 +1,7 @@
 {
   "name": "henge",
   "description": "A tool that generates artifacts for upstream projects and make them configurable dependencies for downstream projects.",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "main": "bld/index.js",
   "typings": "bld/index.d.ts",
   "bin": {
