@@ -1,5 +1,4 @@
-[![NPM Package](https://badge.fury.io/js/henge.svg)](https://www.npmjs.com/packa
-ge/henge)
+[![NPM Package](https://badge.fury.io/js/henge.svg)](https://www.npmjs.com/package/henge)
 
 # Henge Distribution Workshop
 
